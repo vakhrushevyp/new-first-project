@@ -1,6 +1,8 @@
 package org.ibs.appline;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -14,14 +16,22 @@ import java.util.concurrent.TimeUnit;
 
 public class FirtsTest {
 
-    @Test
-    public void firstTest() {
-
-        WebDriver driver = new ChromeDriver();
+    WebDriver driver;
+    @Before
+    public void beforeTest() {
+        driver = new ChromeDriver();
         driver.manage().window().maximize();
         driver.manage().timeouts().pageLoadTimeout(15, TimeUnit.SECONDS);
         driver.manage().timeouts().setScriptTimeout(15, TimeUnit.SECONDS);
         driver.manage().timeouts().implicitlyWait(15, TimeUnit.SECONDS);
+    }
+
+
+
+    @Test
+    public void firstTest() {
+
+
         driver.get("https://www.sberbank.ru/ru/person");
         WebElement btnCookie =  driver.findElement(By.xpath("//span[@class='dk-sbol-button__text dk-sbol-button__text_size_sm']"));
         btnCookie.click();
@@ -59,9 +69,28 @@ public class FirtsTest {
 
         Assert.assertEquals("Заголовок не найден","Страхование путешественников", titleTravelInsPage.getText());
 
-        wait(5000);
-        driver.quit();
+        WebElement checkOnSite = driver.findElement(By.xpath("//a[@data-testid='Link']"));
+        actions.moveToElement(checkOnSite);
+        actions.perform();
+        wait(2000);
+        checkOnSite.click();
+        parentHandle = driver.getWindowHandle();
+        for(String childHandle : driver.getWindowHandles()){
+            if (!childHandle.equals(parentHandle)){
+                driver.close();
+                driver.switchTo().window(childHandle);
+            }
+        }
 
+
+        wait(5000);
+
+
+    }
+
+    @After
+    public void afterTest() {
+        driver.quit();
     }
 
     public void wait (int mls) {
@@ -71,6 +100,8 @@ public class FirtsTest {
             e.printStackTrace();
         }
     }
+
+
 
 
 }
